@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sparrow</title>
+
+	<!-- for mobile screens -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- stylesheets are conveniently separated into components -->
+	<link rel="stylesheet" media="all" href="styles/setup.css">
+	<link rel="stylesheet" media="all" href="styles/says.css">
+	<link rel="stylesheet" media="all" href="styles/reply.css">
+	<link rel="stylesheet" media="all" href="styles/typing.css">
+	<link rel="stylesheet" media="all" href="styles/input.css">
+	<style>
+	body {
+		background: #dcdde0;
+	}
+	.bubble-container {
+		height: 100vh;
+	}
+	.bubble-container .input-wrap textarea {
+		margin: 0;
+		width: calc(100% - 30px);
+	}
+	</style>
+</head>
+<body>
+
+  
+<div id="chat"></div>
+
+
+<script src="Bubbles.js"></script>
+<script>
+  
+var msgcount=0;
+var username = null;
+var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
+
+
+
+  inputCallbackFn: function(o) {
+		if (msgcount==0){
+			username = o.input;
+			msgcount = msgcount+1;
+		}
+
+    else{
+      var d = new Date();
+      var ts = d.getTime();
+
+      var xhr = new XMLHttpRequest();
+      var url = "http://127.0.0.1:5000/send";
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+
+      var data = JSON.stringify({
+        "key":"sparrow:jay1234_"+ts,
+        "userID":"sparrow:"+username,
+        "timeStamp":ts,
+        "destination":"sparrow",
+        "message": o.input
+        });
+
+      xhr.send(data);
+    }
+
+
+    // var convo2 = {
+    //   ice: {
+    //     says: ["Yolo"],
+
+    //   }
+    // }
+    // chatWindow.talk(convo2);
+
+
+		var d = new Date();
+  	var ts = d.getTime();
+
+		var xhr = new XMLHttpRequest();
+		var url = "http://127.0.0.1:5000/mainlink";
+		xhr.open("POST", url, true);
+		xhr.setRequestHeader("Content-Type", "application/json");
+
+		var data = JSON.stringify({
+			"key":"sparrow:jay1234_"+ts,
+			"userID":"sparrow:"+username,
+			"timeStamp":ts,
+			"destination":"sparrow",
+			"message": o.input
+			});
+
+		xhr.send(data);
+  }
+}) 
+
+
+
+
+
+var initiateConversation = {
+  ice: {
+    says: ["Hi", "Whats your username?"],
+
+  }
+}
+
+chatWindow.talk(initiateConversation)
+
+</script>
+</body>
