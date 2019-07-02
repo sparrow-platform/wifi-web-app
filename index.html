@@ -37,68 +37,84 @@
   
 var msgcount=0;
 var username = null;
+const messageSet = new Set([]);
+
 var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
 
 
 
   inputCallbackFn: function(o) {
-		if (msgcount==0){
-			username = o.input;
-			msgcount = msgcount+1;
-		}
+	if (msgcount==0){
+		username = o.input;
+		msgcount = msgcount+1;
+		console.log(username);
+	}
 
     else{
       var d = new Date();
       var ts = d.getTime();
 
       var xhr = new XMLHttpRequest();
-      var url = "http://127.0.0.1:5000/send";
-      xhr.open("POST", url, true);
-      xhr.setRequestHeader("Content-Type", "application/json");
+	  var url = "http://35ee3617.ngrok.io/send";
+	  
 
       var data = JSON.stringify({
-        "key":"sparrow:jay1234_"+ts,
+        "key":"sparrow:"+username+'_'+ts,
         "userID":"sparrow:"+username,
         "timeStamp":ts,
         "destination":"sparrow",
         "message": o.input
-        });
+		});
+		
 
-      xhr.send(data);
+	var formData = new FormData();
+	formData.append('data', data);
+
+
+	var req = new Request(url, {
+		method: 'post',
+		body: formData
+	});
+	
+	fetch(req);
+
     }
-
-
-    // var convo2 = {
-    //   ice: {
-    //     says: ["Yolo"],
-
-    //   }
-    // }
-    // chatWindow.talk(convo2);
-
-
-		var d = new Date();
-  	var ts = d.getTime();
-
-		var xhr = new XMLHttpRequest();
-		var url = "http://127.0.0.1:5000/mainlink";
-		xhr.open("POST", url, true);
-		xhr.setRequestHeader("Content-Type", "application/json");
-
-		var data = JSON.stringify({
-			"key":"sparrow:jay1234_"+ts,
-			"userID":"sparrow:"+username,
-			"timeStamp":ts,
-			"destination":"sparrow",
-			"message": o.input
-			});
-
-		xhr.send(data);
+	
   }
 }) 
 
 
+setInterval(function() {
+	fetch('http://35ee3617.ngrok.io/receive', {
+		method: 'GET',
+		headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "*"
+      },
+	})
+	.then(r => r.json())
+	.then(r => {
+		r.forEach(message => {
+			var currentUserID = message['userID'];
+			var messageContent = message['message'];
+			var messageKey = message['key'];
+			var destination = message['destination'];
+			if (!messageSet.has(messageKey) && ("sparrow:"+username == destination)){
+				messageSet.add(messageKey);
+				var convoNew = {
+					ice: {
+						says: [messageContent],
+					}
+				};
+				chatWindow.talk(convoNew);
+			}
+		});
+	});
 
+    
+}, 10 * 1000);
 
 
 var initiateConversation = {
