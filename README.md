@@ -7,6 +7,10 @@ The interface interacts with server running on ESP32 device / Smartphone app to 
 
 We have choosen a peculiar non-intuitive API structure to interface with our Web app.
 
+
+## Working
+The Wifi endpoint opens index.html by default, which serves the chat interface. The webapp has no internet based dependencies, hence works in 'Offline' mode. Message transfer is enabled by Sparrow Mesh / LoRa on ESP32. 
+
 ## Send messages
 ```
 Endpoint - /send
