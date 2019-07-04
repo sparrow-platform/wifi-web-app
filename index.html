@@ -40,7 +40,7 @@ var username = null;
 const messageSet = new Set([]);
 
 // var server = "http://35ee3617.ngrok.io/";
-var server = "192.168.4.1";
+var server = "http://192.168.4.1";
 
 var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
 
@@ -58,7 +58,7 @@ var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
       var ts = d.getTime();
 
       var xhr = new XMLHttpRequest();
-	  var url = server +  "send";
+	  var url = server +  "/send";
 	  
 
       var data = JSON.stringify({
@@ -88,7 +88,7 @@ var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
 
 
 setInterval(function() {
-	fetch(server  + 'receive', {
+	fetch(server  + '/receive', {
 		method: 'GET',
 		headers: {
         'Accept': 'application/json',
